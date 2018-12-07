@@ -252,8 +252,10 @@
                                 </audio>
                                 <i class="fas fa-search" v-on:click.prevent='searchLyric(song.artist,song.title)'></i>
                                 <div>
-                                    <div class="fb-share-button" :data-href="song.url" data-layout="button_count" data-size="large" data-mobile-iframe="true" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true" allow="encrypted-media">
-                                    </div>
+                                    <!--<div class="fb-share-button" :data-href="song.url" data-layout="button_count" data-size="large" data-mobile-iframe="true" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true" allow="encrypted-media">
+                                    </div>-->
+                                    <i class="fas fa-share"> 
+                                    <a target="_blank" :href="'https://www.facebook.com/sharer/sharer.php?kid_directed_site=0&sdk=joey&u=' + song.url + '&display=popup&ref=plugin&src=share_button'"> Share</a> </i>
                                 </div>
                             </td>
                         </tr>
