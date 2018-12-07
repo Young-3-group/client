@@ -83,17 +83,9 @@
                         <h2 class="section-heading text-uppercase">MUSIC</h2>
                         <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
                     </div>
-                    <div class="col-4">
-                        <button class="btn btn-primary text-uppercase" @click.prevent='upload'>Upload</button>
-                        <div id="loading" v-if="loading2"></div>
-                        <small v-if="loading2">Sabar yaah . . .</small> 
-                    </div>
-                   
                 </div>
     
                 <!-- LIST MUSICS -->
-                <song-list :songs="songs" @search='searchdata'></song-list>
-                </div>
 
                 <div class="row px-5">
                     <div class="col-md-6 col-sm-6 portfolio-item">
@@ -110,6 +102,8 @@
                             </div>
                             <div class="col-4">
                                 <button class="btn btn-primary text-uppercase" @click.prevent='upload'>Upload</button>
+                                <div id="loading" v-if="loading2"></div>
+                                <small v-if="loading2">Sabar yaah . . .</small> 
                             </div>
                         </div>
 
