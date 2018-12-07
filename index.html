@@ -84,10 +84,10 @@
                 </div>
     
                 <!-- LIST MUSICS -->
-                <song-list :songs="songs"></song-list>
+                <song-list :songs="songs" @search='searchdata'></song-list>
                 </div>
                 <div class="col-md-6 col-sm-6 portfolio-item border">
-                <lyric-list @give_link="embedvidlink"></lyric-list>
+                <lyric-list @give_link="embedvidlink" :current_song="currentsong"></lyric-list>
                 </div>
             </div> 
     
@@ -126,7 +126,7 @@
 
 
         Vue.component('lyric-list', {
-            props: [],
+            props: ["current_song"],
             data: function () {
                 return {
                     title: "",
@@ -148,8 +148,8 @@
                         method: "POST",
                         url: "http://localhost:3000/lyrics/",
                         data: {
-                            title: this.title,
-                            artist: this.artist
+                            title: this.current_song.title,
+                            artist: this.current_song.artist
                         }
                     })
                     .then(response => {
@@ -160,13 +160,13 @@
                             method: "POST",
                             url: "http://localhost:3000/lyrics/video",
                             data: {
-                            title: self.title,
-                            artist: self.artist
+                            title: self.current_song.title,
+                            artist: self.current_song.artist
                             }
                         })
                         .then(link => {
                             this.videoLink = link.data.data
-                            this.$emit('give_link', {video: this.videoLink, title: this.title})
+                            this.$emit('give_link', {video: this.videoLink, title: this.current_song.title})
                             this.vidloading = false
                         })
                     })
@@ -175,26 +175,16 @@
                         self.loading = false
                         console.log(err.response.data.message)
                     })
+                },
+            },
+            watch: {
+                current_song: function(val) {
+                    this.getLyrics()
                 }
             },
             template: `                
                 <div>
-                    <div>
-                        <h1>Search Music</h1>
-                        <form @submit.prevent="getLyrics">
-                            <div class="form-group">
-                                Artist:
-                                <br>
-                                <input type="text" v-model="artist">
-                            </div>
-                            <div class="form-group">
-                                Title:
-                                <br>
-                                <input type="text" v-model="title">
-                            </div>
-                            <button type="submit" class="btn btn-primary text-uppercase">Get Lyrics</button>
-                        </form>
-                        <hr>
+                    <div>                        
                         <div class="row">
                             <div class="col-10">
                                 <h1>Lyrics <span v-if="lyrics"> for {{title}}</span></h1>
@@ -250,6 +240,7 @@
             ,methods:{
                 searchLyric(artist,title){
                     console.log(artist,title)
+                    this.$emit('search',{artist,title})
                 }
             }
         })
@@ -284,12 +275,18 @@
                 },
                 songs: [],
                 videoLink: "",
-                currenttitle:""
+                currenttitle:"",
+                currentsong: {}
             },
             created(){
                 this.showListSong()
             },
             methods: {
+                searchdata(data){
+                    console.log('aaaaooo')
+                    console.log(data)
+                    this.currentsong = data
+                },
                 data(fileUpload){
                   console.log(fileUpload)
                   this.song.file = fileUpload.target.files[0]
