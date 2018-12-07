@@ -6,6 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Group Young</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:url" content="http://localhost:3000" />
+    <meta property="og:audio" content="" />
+    <meta property="og:title" content="My Website" />
+    <meta property="og:description" content="Your description" />
+    <meta property="og:" content="https://www.your-domain.com/path/image.jpg" />
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
@@ -25,16 +30,18 @@
 </head>
 
 <body>
-    <div id="app">
-        <!-- NAVBAR -->
-        <div id="fb-root"></div>
+    <div id="fb-root">
         <script>(function (d, s, id) {
                 var js, fjs = d.getElementsByTagName(s)[0];
                 if (d.getElementById(id)) return;
                 js = d.createElement(s); js.id = id;
                 js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
                 fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));</script>
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
+    </div>
+    <div id="app">
+        <!-- NAVBAR -->
 
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
             <div class="container">
@@ -200,7 +207,7 @@
                     <div>                        
                         <div class="row">
                             <div class="col-10">
-                                <h1>Lyrics <span v-if="lyrics"> for {{title}}</span></h1>
+                                <h1>Lyrics <span v-if="lyrics"> for {{current_song.title}}</span></h1>
                             </div>
                             <div class="col-2">
                                 <i class="fab fa-youtube" style="font-size:50px;color:grey" v-if="vidloading"></i>
@@ -246,7 +253,6 @@
                                 <i class="fas fa-search" v-on:click.prevent='searchLyric(song.artist,song.title)'></i>
                                 <div>
                                     <div class="fb-share-button" :data-href="song.url" data-layout="button_count" data-size="large" data-mobile-iframe="true" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true" allow="encrypted-media">
-                                    Share
                                     </div>
                                 </div>
                             </td>
