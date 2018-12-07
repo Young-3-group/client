@@ -163,7 +163,7 @@
                             console.log(response.data.data)
                             this.lyrics = response.data.data
                             this.loading = false
-                            return axios({
+                            axios({
                                 method: "POST",
                                 url: "https://hacktify-server.thenile.online/lyrics/video",
                                 data: {
@@ -171,11 +171,15 @@
                                     artist: self.current_song.artist
                                 }
                             })
-                                .then(link => {
-                                    this.videoLink = link.data.data
-                                    this.$emit('give_link', { video: this.videoLink, title: this.current_song.title })
-                                    this.vidloading = false
-                                })
+                            .then(link => {
+                                this.videoLink = link.data.data
+                                this.$emit('give_link', { video: this.videoLink, title: this.current_song.title })
+                                this.vidloading = false
+                            })
+                            .catch(err => {
+                            self.loading = false
+                            console.log(err.response.data.message)
+                        })
                         })
                         .catch(err => {
                             this.lyrics = err.response.data.message
