@@ -17,6 +17,7 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 
     <link href="css/agency.min.css" rel="stylesheet">
+    <link href="./css/lyrics.css" rel="stylesheet">
 
 </head>
 <body>
@@ -86,13 +87,33 @@
                 <song-list :songs="songs"></song-list>
                 </div>
                 <div class="col-md-6 col-sm-6 portfolio-item border">
-                <h1>Lyric</h1>
-                <p>{{ lyric }}</p>
+                <lyric-list @give_link="embedvidlink"></lyric-list>
                 </div>
             </div> 
     
             </div>
         </section>
+        <!-- Video Modal -->
+        <div class="modal fade" id="vidModal" tabindex="-1" role="dialog" style="z-index: 10000">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{currenttitle}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <iframe width="420" height="315"
+                        :src="videoLink">
+                        </iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -103,6 +124,96 @@
 
     <script>
 
+
+        Vue.component('lyric-list', {
+            props: [],
+            data: function () {
+                return {
+                    title: "",
+                    artist: "",
+                    lyrics: "",
+                    videoLink: "",
+                    loading: false,
+                    vidloading: true
+                }
+            },
+            methods: {
+                getLyrics() {
+                    let self = this
+                    this.vidloading = true
+                    this.loading = true
+                    this.lyrics = ""
+                    console.log(this.title, this.artist)
+                    axios({
+                        method: "POST",
+                        url: "http://localhost:3000/lyrics/",
+                        data: {
+                            title: this.title,
+                            artist: this.artist
+                        }
+                    })
+                    .then(response => {
+                        console.log(response.data.data)
+                        this.lyrics = response.data.data
+                        this.loading = false
+                        return axios({
+                            method: "POST",
+                            url: "http://localhost:3000/lyrics/video",
+                            data: {
+                            title: self.title,
+                            artist: self.artist
+                            }
+                        })
+                        .then(link => {
+                            this.videoLink = link.data.data
+                            this.$emit('give_link', {video: this.videoLink, title: this.title})
+                            this.vidloading = false
+                        })
+                    })
+                    .catch(err => {
+                        this.lyrics = err.response.data.message
+                        self.loading = false
+                        console.log(err.response.data.message)
+                    })
+                }
+            },
+            template: `                
+                <div>
+                    <div>
+                        <h1>Search Music</h1>
+                        <form @submit.prevent="getLyrics">
+                            <div class="form-group">
+                                Artist:
+                                <br>
+                                <input type="text" v-model="artist">
+                            </div>
+                            <div class="form-group">
+                                Title:
+                                <br>
+                                <input type="text" v-model="title">
+                            </div>
+                            <button type="submit" class="btn btn-primary text-uppercase">Get Lyrics</button>
+                        </form>
+                        <hr>
+                        <div class="row">
+                            <div class="col-10">
+                                <h1>Lyrics <span v-if="lyrics"> for {{title}}</span></h1>
+                            </div>
+                            <div class="col-2">
+                                <i class="fab fa-youtube" style="font-size:50px;color:grey" v-if="vidloading"></i>
+                                <i class="fab fa-youtube" style="font-size:50px; color:yellow; cursor:pointer" v-else data-toggle="modal" data-target="#vidModal"></i>
+                            </div>
+                        </div>
+                        <div v-html="lyrics"></div>
+                    </div>
+                    <hr>
+                    <div id="loading" v-if="loading"></div>
+                    <small v-if="loading">This may take a while . . .</small>
+                
+                    
+                </div>
+                `
+        })
 
         Vue.component('song-list', {
             props: ['songs'],
@@ -171,7 +282,9 @@
                     artist: '',
                     url: ''
                 },
-                songs: []
+                songs: [],
+                videoLink: "",
+                currenttitle:""
             },
             created(){
                 this.showListSong()
@@ -210,10 +323,12 @@
                     .catch(error => {
                       console.log(error);
                     });
+                },
+                embedvidlink(link) {
+                    this.videoLink = link.video
+                    this.currenttitle = link.title
                 }
-                
-
-            }
+            },
         })
     </script>
 
