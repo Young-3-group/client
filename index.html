@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Group Young</title>
+    <title>Hacktify</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:url" content="http://localhost:3000" />
     <meta property="og:audio" content="" />
@@ -47,17 +47,6 @@
             <div class="container">
                 <a class="navbar-brand js-scroll-trigger" href="#page-top">Hacktify</a>
                 <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav text-uppercase ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" href="#">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" href="#">Logout</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link js-scroll-trigger" href="#">Register</a>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </nav>
@@ -68,7 +57,7 @@
             <div class="container">
                 <div class="intro-text">
                     <div class="intro-lead-in">Welcome To Hacktify!</div>
-                    <div class="intro-heading text-uppercase">It's Nice To Meet You</div>
+                    <div class="intro-heading text-uppercase">Music for Developers</div>
                 </div>
             </div>
         </header>
@@ -78,12 +67,6 @@
         <!-- Portfolio Grid -->
         <section class="bg-light" id="portfolio">
             <div>
-                <div class="row">
-                    <div class="col-lg-12 text-center">
-                        <h2 class="section-heading text-uppercase">MUSIC</h2>
-                        <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
-                    </div>
-                </div>
     
                 <!-- LIST MUSICS -->
 
@@ -110,7 +93,7 @@
                         <!-- LIST MUSICS -->
                         <song-list :songs="songs" @search='searchdata'></song-list>
                     </div>
-                    <div class="col-md-6 col-sm-6 portfolio-item border">
+                    <div class="col-md-6 col-sm-6 portfolio-item">
                         <lyric-list @give_link="embedvidlink" :current_song="currentsong"></lyric-list>
                     </div>
                 </div>
@@ -170,7 +153,7 @@
                     console.log(this.title, this.artist)
                     axios({
                         method: "POST",
-                        url: "http://localhost:3000/lyrics/",
+                        url: "https://hacktify-server.thenile.online/lyrics/",
                         data: {
                             title: this.current_song.title,
                             artist: this.current_song.artist
@@ -182,7 +165,7 @@
                             this.loading = false
                             return axios({
                                 method: "POST",
-                                url: "http://localhost:3000/lyrics/video",
+                                url: "https://hacktify-server.thenile.online/lyrics/video",
                                 data: {
                                     title: self.current_song.title,
                                     artist: self.current_song.artist
@@ -327,7 +310,7 @@
                   formData.append('file', this.song.file)
                   formData.append('title', this.song.title)
                   formData.append('artist', this.song.artist)
-                  axios.post('http://localhost:3000/upload', formData)
+                  axios.post('https://hacktify-server.thenile.online/upload', formData)
                   .then(response => {
                     console.log(response.data.url)
                     this.loading2 = false
@@ -343,7 +326,7 @@
                   });
                 },
                 showListSong() {
-                    axios.get('http://localhost:3000/upload')
+                    axios.get('https://hacktify-server.thenile.online/upload')
                         .then(songs => {
                             console.log(songs.data)
                             this.songs = songs.data
