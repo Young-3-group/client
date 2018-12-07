@@ -83,6 +83,16 @@
                         <h2 class="section-heading text-uppercase">MUSIC</h2>
                         <h3 class="section-subheading text-muted">Lorem ipsum dolor sit amet consectetur.</h3>
                     </div>
+                    <div class="col-4">
+                        <button class="btn btn-primary text-uppercase" @click.prevent='upload'>Upload</button>
+                        <div id="loading" v-if="loading2"></div>
+                        <small v-if="loading2">Sabar yaah . . .</small> 
+                    </div>
+                   
+                </div>
+    
+                <!-- LIST MUSICS -->
+                <song-list :songs="songs" @search='searchdata'></song-list>
                 </div>
 
                 <div class="row px-5">
@@ -218,9 +228,7 @@
                     </div>
                     <hr>
                     <div id="loading" v-if="loading"></div>
-                    <small v-if="loading">This may take a while . . .</small>
-                
-                    
+                    <small v-if="loading">This may take a while . . .</small> 
                 </div>
                 `
         })
@@ -229,7 +237,6 @@
             props: ['songs'],
             data: function () {
                 return {
-
                 }
             },
             template: `                
@@ -303,7 +310,8 @@
                 videoLink: "",
                 currenttitle: "",
                 currentsong: {},
-                url: ''
+                url: '',
+                loading2: false
             },
             created() {
                 this.showListSong()
@@ -319,24 +327,26 @@
                     this.song.file = fileUpload.target.files[0]
                     console.log(this.song.file)
                 },
-                upload() {
-                    const formData = new FormData()
-                    formData.append('file', this.song.file)
-                    formData.append('title', this.song.title)
-                    formData.append('artist', this.song.artist)
-                    axios.post('http://localhost:3000/upload', formData)
-                        .then(response => {
-                            console.log(response.data.url)
-                            this.songs.push({
-                                title: response.data.title,
-                                artist: response.data.artist,
-                                url: response.data.url
-                            })
-                            console.log(this.songs)
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        });
+                upload(){  
+                    this.loading2 = true
+                  const formData = new FormData()
+                  formData.append('file', this.song.file)
+                  formData.append('title', this.song.title)
+                  formData.append('artist', this.song.artist)
+                  axios.post('http://localhost:3000/upload', formData)
+                  .then(response => {
+                    console.log(response.data.url)
+                    this.loading2 = false
+                    this.songs.push({
+                        title: response.data.title,
+                        artist: response.data.artist, 
+                        url: response.data.url
+                    })
+                    console.log(this.songs)
+                  })
+                  .catch(error => {
+                    console.log(error);
+                  });
                 },
                 showListSong() {
                     axios.get('http://localhost:3000/upload')
