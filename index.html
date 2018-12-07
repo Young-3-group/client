@@ -72,17 +72,18 @@
                 <!-- UPLOAD FORM -->
                 <div class="row">
                     <div class="form-group col-8">
-                    <input class="form-control" type="text" placeholder="insert file" required="required" data-validation-required-message="Please enter your name.">
+                        <input class="form-control" type="text" placeholder="Title" required="required" data-validation-required-message="Please enter title song." v-model='song.title'>
+                        <input class="form-control" type="text" placeholder="Artist" required="required" data-validation-required-message="Please enter artist." v-model='song.artist'>
+                        <input class="form-control" type="file" name="file" @change='data'> 
+                        <!-- <input class="form-control" type="text" placeholder="insert file" required="required" data-validation-required-message="Please enter your name."> -->
                     </div>
                     <div class="col-4">
-                    <button class="btn btn-primary text-uppercase" type="submit">Upload</button>
+                        <button class="btn btn-primary text-uppercase" @click.prevent='upload'>Upload</button>
                     </div>
                 </div>
     
                 <!-- LIST MUSICS -->
                 <song-list :songs="songs"></song-list>
-    
-
                 </div>
                 <div class="col-md-6 col-sm-6 portfolio-item border">
                 <h1>Lyric</h1>
@@ -124,12 +125,22 @@
                         <tr v-for="song in songs">
                             <td>{{ song.artist }}</td>
                             <td>{{ song.title }}</td>
-                            <td><a :href="song.url" style="font-size: 2em;"> <i class="fa fa-play-circle"></i></a> </td>
+                            <td>
+                                <audio controls>
+                                    <source :src="song.url" type="audio/mpeg">
+                                </audio>
+                                <i class="fas fa-search" v-on:click.prevent='searchLyric(song.artist,song.title)'></i>
+                            </td>
                         </tr>
                     </tbody>
                     </table>
                 </div>
                 `
+            ,methods:{
+                searchLyric(artist,title){
+                    console.log(artist,title)
+                }
+            }
         })
 
         var app = new Vue({
@@ -155,15 +166,53 @@
                 Scare myself to death
                 That's why I keep on running
                 `,
-                songs: [{
-                    title: "newSong",
-                    artist: "newArtist", 
-                    url: "http://www.facebook.com"
-                }, {
-                    title: "newSong2",
-                    artist: "newArtist2", 
-                    url: "http://www.google.com"
-                }]
+                song:{
+                    title: '',
+                    artist: '',
+                    url: ''
+                },
+                songs: []
+            },
+            created(){
+                this.showListSong()
+            },
+            methods: {
+                data(fileUpload){
+                  console.log(fileUpload)
+                  this.song.file = fileUpload.target.files[0]
+                  console.log(this.song.file)
+                },
+                upload(){  
+                  const formData = new FormData()
+                  formData.append('file', this.song.file)
+                  formData.append('title', this.song.title)
+                  formData.append('artist', this.song.artist)
+                  axios.post('http://localhost:3000/upload', formData)
+                  .then(response => {
+                    console.log(response.data.url)
+                    this.songs.push({
+                        title: response.data.title,
+                        artist: response.data.artist, 
+                        url: response.data.url
+                    })
+                    console.log(this.songs)
+                  })
+                  .catch(error => {
+                    console.log(error);
+                  });
+                },
+                showListSong(){
+                    axios.get('http://localhost:3000/upload')
+                    .then(songs => {
+                        console.log(songs.data)
+                        this.songs = songs.data
+                    })
+                    .catch(error => {
+                      console.log(error);
+                    });
+                }
+                
+
             }
         })
     </script>
