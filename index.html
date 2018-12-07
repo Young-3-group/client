@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hacktify</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:url" content="http://localhost:3000" />
+    <meta property="og:audio" content="" />
+    <meta property="og:title" content="My Website" />
+    <meta property="og:description" content="Your description" />
+    <meta property="og:" content="https://www.your-domain.com/path/image.jpg" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+        crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <link href="css/agency.min.css" rel="stylesheet">
+    <link href="./css/lyrics.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div id="fb-root">
+        <script>(function (d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        </script>
+    </div>
+    <div id="app">
+        <!-- NAVBAR -->
+
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand js-scroll-trigger" href="#page-top">Hacktify</a>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+
+
+        <!-- Header -->
+        <header class="masthead">
+            <div class="container">
+                <div class="intro-text">
+                    <div class="intro-lead-in">Welcome To Hacktify!</div>
+                    <div class="intro-heading text-uppercase">Music for Developers</div>
+                </div>
+            </div>
+        </header>
+
+
+
+        <!-- Portfolio Grid -->
+        <section class="bg-light" id="portfolio">
+            <div>
+    
+                <!-- LIST MUSICS -->
+
+                <div class="row px-5">
+                    <div class="col-md-6 col-sm-6 portfolio-item">
+
+                        <!-- UPLOAD FORM -->
+                        <div class="row">
+                            <div class="form-group col-8">
+                                <input class="form-control" type="text" placeholder="Title" required="required" data-validation-required-message="Please enter title song."
+                                    v-model='song.title'>
+                                <input class="form-control" type="text" placeholder="Artist" required="required" data-validation-required-message="Please enter artist."
+                                    v-model='song.artist'>
+                                <input class="form-control" type="file" name="file" @change='data'>
+                                <!-- <input class="form-control" type="text" placeholder="insert file" required="required" data-validation-required-message="Please enter your name."> -->
+                            </div>
+                            <div class="col-4">
+                                <button class="btn btn-primary text-uppercase" @click.prevent='upload'>Upload</button>
+                                <div id="loading" v-if="loading2"></div>
+                                <small v-if="loading2">Sabar yaah . . .</small> 
+                            </div>
+                        </div>
+
+                        <!-- LIST MUSICS -->
+                        <song-list :songs="songs" @search='searchdata'></song-list>
+                    </div>
+                    <div class="col-md-6 col-sm-6 portfolio-item">
+                        <lyric-list @give_link="embedvidlink" :current_song="currentsong"></lyric-list>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <!-- Video Modal -->
+        <div class="modal fade" id="vidModal" tabindex="-1" role="dialog" style="z-index: 10000">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{{currenttitle}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe width="420" height="315" :src="videoLink">
+                        </iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script src="js/agency.min.js"></script>
+
+    <script>
+        Vue.component('lyric-list', {
+            props: ["current_song"],
+            data: function () {
+                return {
+                    title: "",
+                    artist: "",
+                    lyrics: "",
+                    videoLink: "",
+                    loading: false,
+                    vidloading: true
+                }
+            },
+            methods: {
+                getLyrics() {
+                    let self = this
+                    this.vidloading = true
+                    this.loading = true
+                    this.lyrics = ""
+                    console.log(this.title, this.artist)
+                    axios({
+                        method: "POST",
+                        url: "https://hacktify-server.thenile.online/lyrics/",
+                        data: {
+                            title: this.current_song.title,
+                            artist: this.current_song.artist
+                        }
+                    })
+                        .then(response => {
+                            console.log(response.data.data)
+                            this.lyrics = response.data.data
+                            this.loading = false
+                            axios({
+                                method: "POST",
+                                url: "https://hacktify-server.thenile.online/lyrics/video",
+                                data: {
+                                    title: self.current_song.title,
+                                    artist: self.current_song.artist
+                                }
+                            })
+                            .then(link => {
+                                this.videoLink = link.data.data
+                                this.$emit('give_link', { video: this.videoLink, title: this.current_song.title })
+                                this.vidloading = false
+                            })
+                            .catch(err => {
+                            self.loading = false
+                            console.log(err.response.data.message)
+                        })
+                        })
+                        .catch(err => {
+                            this.lyrics = err.response.data.message
+                            self.loading = false
+                            console.log(err.response.data.message)
+                        })
+                },
+            },
+            watch: {
+                current_song: function (val) {
+                    this.getLyrics()
+                }
+            },
+            template: `                
+                <div>
+                    <div>                        
+                        <div class="row">
+                            <div class="col-10">
+                                <h1>Lyrics <span v-if="lyrics"> for {{current_song.title}}</span></h1>
+                            </div>
+                            <div class="col-2">
+                                <i class="fab fa-youtube" style="font-size:50px;color:grey" v-if="vidloading"></i>
+                                <i class="fab fa-youtube" style="font-size:50px; color:yellow; cursor:pointer" v-else data-toggle="modal" data-target="#vidModal"></i>
+                            </div>
+                        </div>
+                        <div v-html="lyrics"></div>
+                    </div>
+                    <hr>
+                    <div id="loading" v-if="loading"></div>
+                    <small v-if="loading">This may take a while . . .</small> 
+                </div>
+                `
+        })
+
+        Vue.component('song-list', {
+            props: ['songs'],
+            data: function () {
+                return {
+                }
+            },
+            template: `                
+                <div class="row">
+                    <table class="table">
+                    <thead>
+                        <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Artist</th>
+                        <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="song in songs">
+                            <td>{{ song.artist }}</td>
+                            <td>{{ song.title }}</td>
+                            <td>
+                                <audio controls>
+                                    <source :src="song.url" type="audio/mpeg">
+                                </audio>
+                                <i class="fas fa-search" v-on:click.prevent='searchLyric(song.artist,song.title)'></i>
+                                <div>
+                                    <!--<div class="fb-share-button" :data-href="song.url" data-layout="button_count" data-size="large" data-mobile-iframe="true" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true" allow="encrypted-media">
+                                    </div>-->
+                                    <i class="fas fa-share"> 
+                                    <a target="_blank" :href="'https://www.facebook.com/sharer/sharer.php?kid_directed_site=0&sdk=joey&u=' + song.url + '&display=popup&ref=plugin&src=share_button'"> Share</a> </i>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    </table>
+                </div>
+                `
+            , methods: {
+                searchLyric(artist, title) {
+                    console.log(artist, title)
+                    this.$emit('search', { artist, title })
+                }
+            }
+        })
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                lyric: `Come and hold my hand
+                I wanna contact the living
+                Not sure I understand
+                This role I've been given
+                I sit and talk to God
+                And he just laughs at my plans
+                My head speaks a language
+                I don't understand
+                I just wanna feel
+                Real love feel the home that I live in
+                'Cause I got too much life
+                Running through my veins
+                Going to waste
+                I don't wanna die
+                But I ain't keen on living either
+                Before I fall in love
+                I'm preparing to leave her
+                Scare myself to death
+                That's why I keep on running
+                `,
+                song: {
+                    title: '',
+                    artist: '',
+                    url: ''
+                },
+                songs: [],
+                videoLink: "",
+                currenttitle: "",
+                currentsong: {},
+                url: '',
+                loading2: false
+            },
+            created() {
+                this.showListSong()
+            },
+            methods: {
+                searchdata(data) {
+                    console.log('aaaaooo')
+                    console.log(data)
+                    this.currentsong = data
+                },
+                data(fileUpload) {
+                    console.log(fileUpload)
+                    this.song.file = fileUpload.target.files[0]
+                    console.log(this.song.file)
+                },
+                upload(){  
+                    this.loading2 = true
+                  const formData = new FormData()
+                  formData.append('file', this.song.file)
+                  formData.append('title', this.song.title)
+                  formData.append('artist', this.song.artist)
+                  axios.post('https://hacktify-server.thenile.online/upload', formData)
+                  .then(response => {
+                    console.log(response.data.url)
+                    this.loading2 = false
+                    this.songs.push({
+                        title: response.data.title,
+                        artist: response.data.artist, 
+                        url: response.data.url
+                    })
+                    console.log(this.songs)
+                  })
+                  .catch(error => {
+                    console.log(error);
+                  });
+                },
+                showListSong() {
+                    axios.get('https://hacktify-server.thenile.online/upload')
+                        .then(songs => {
+                            console.log(songs.data)
+                            this.songs = songs.data
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                },
+                embedvidlink(link) {
+                    this.videoLink = link.video
+                    this.currenttitle = link.title
+                }
+            },
+        })  
+    </script>
+
+</body>
+
+</html>
